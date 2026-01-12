@@ -25,4 +25,15 @@ router.get('/health', async (req, res) => {
     }
 });
 
+router.get('/metrics', (req, res) => {
+    const mem = process.memoryUsage();
+    res.json({
+        uptime: process.uptime(),
+        rss: mem.rss,
+        heapTotal: mem.heapTotal,
+        heapUsed: mem.heapUsed,
+        external: mem.external
+    });
+});
+
 export default router;

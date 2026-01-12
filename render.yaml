@@ -5,8 +5,6 @@ services:
     env: docker
     plan: free
     region: oregon
-    buildCommand: "./scripts/build.sh" # Opcional se usar Docker puro, mas útil se precisar de pre-build steps
-    startCommand: "npm start"
     envVars:
       - key: NODE_ENV
         value: production
