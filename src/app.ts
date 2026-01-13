@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import { WebhookController } from './controllers/webhookController.js';
 import healthRoutes from './routes/health.js';
 import maintenanceRoutes from './routes/maintenance.js';
+import salesRoutes from './routes/sales.js';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.get('/', (req, res) => {
 // Healthcheck
 app.use('/', healthRoutes);
 app.use('/maintenance', maintenanceRoutes);
+app.use('/sales', salesRoutes);
 
 // Endpoint para o Webhook da Hotmart
 app.post('/webhook/hotmart', webhookController.handleHotmartEvent);
