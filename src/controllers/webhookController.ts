@@ -112,6 +112,9 @@ export class WebhookController {
     const contactAttributes = {
       NOME: buyer.name,
       COUNTRY: buyer.address?.country_iso || 'BR',
+      AI_SENTIMENT: analysis.sentiment,
+      AI_STAGE: analysis.dealStage,
+      AI_ACTION: analysis.suggestedAction
     };
 
     console.log('Creating/Updating contact in Brevo...');
@@ -119,6 +122,12 @@ export class WebhookController {
       buyer.email, 
       contactAttributes
     );
+
+    // Adicionar nota com resumo da IA
+    if (analysis.summary) {
+        console.log('Adding AI Summary note to contact...');
+        await this.brevoService.addNoteToContact(buyer.email, `[AI ANALYSIS] ${analysis.summary}\n\nTags: ${analysis.tags.join(', ')}`);
+    }
 
     const dealName = `Venda ${event.data.product.name} - ${buyer.name}`;
     const amount = event.data.purchase.price.value;

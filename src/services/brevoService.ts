@@ -4,14 +4,17 @@ import { config } from '../config/env.js';
 export class BrevoService {
   private apiInstance: brevo.ContactsApi;
   private dealsApiInstance: brevo.DealsApi;
+  private notesApiInstance: brevo.NotesApi;
 
   constructor() {
     this.apiInstance = new brevo.ContactsApi();
     this.dealsApiInstance = new brevo.DealsApi();
+    this.notesApiInstance = new brevo.NotesApi();
     
     // Configure API key authorization
     this.apiInstance.setApiKey(brevo.ContactsApiApiKeys.apiKey, config.brevoApiKey);
     this.dealsApiInstance.setApiKey(brevo.DealsApiApiKeys.apiKey, config.brevoApiKey);
+    this.notesApiInstance.setApiKey(brevo.NotesApiApiKeys.apiKey, config.brevoApiKey);
   }
 
   /**
@@ -69,6 +72,31 @@ export class BrevoService {
         console.error('Error creating deal in Brevo:', error.body || error.message);
         throw error;
     }
+  }
+
+  /**
+   * Adiciona uma nota a um contato (CRM)
+   */
+  async addNoteToContact(email: string, text: string): Promise<any> {
+      try {
+          const contact = await this.getContact(email);
+          if (!contact || !contact.id) {
+              console.warn(`Cannot add note: Contact ${email} not found.`);
+              return null;
+          }
+
+          const noteData = new brevo.NoteData();
+          noteData.text = text;
+          noteData.contactIds = [contact.id];
+
+          const data = await this.notesApiInstance.crmNotesPost(noteData);
+          console.log('Note added successfully:', data.body);
+          return data.body;
+      } catch (error: any) {
+          console.error('Error adding note to Brevo:', error.body || error.message);
+          // Don't throw, just log, as this is secondary
+          return null;
+      }
   }
 
   async getContact(email: string): Promise<{ id: number; email?: string } | null> {
